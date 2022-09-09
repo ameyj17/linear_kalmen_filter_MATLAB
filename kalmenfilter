@@ -1,0 +1,35 @@
+% MATLAB OPERATIONS %
+
+H = [1 0 0 0;
+     0 0 1 0 ]
+S_D = 2 ;
+
+Q = [1 0 0 0;
+     0 1 0 0;
+     0 0 1 0;
+     0 0 0 1 ]
+
+R = [S_D^2 0;
+     0 S_D^2 ]
+
+dt = 0.2;
+A = [1 dt 0 0;
+     0 1  0 0;
+     0 0 1 dt;
+     0 0 0 1 ]
+
+measurements = measurements';
+x_est = zeros(101,4);
+p_est = zeros(101,4);
+x_est(1,:) = [30,2,40,2];
+
+for n = 1:101
+    xpred = A*(x_est(n,:))'
+    p_est__ = p_est(n,:)
+    ppred = transpose(A*transpose(p_est(n,:)))*A+Q
+    k = (ppred*transpose(H))*inv(((H*ppred)*transpose(H)+R))
+    x_est(n+1,:) = xpred +k*(((measurements(n,:)-H)*xpred))
+    p_est = (eye(4)-k.*H).*ppred
+end
+
+
